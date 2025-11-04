@@ -1,0 +1,46 @@
+### 🧠 Get all tasks
+GET http://127.0.0.1:5000/tasks
+
+
+### ➕ Add a new task
+POST http://127.0.0.1:5000/tasks
+Content-Type: application/json
+
+{
+  "title": "Learn Flask",
+  "description": "Start building Flask APIs"
+}
+
+
+### 🔁 Get all tasks again (to confirm)
+GET http://127.0.0.1:5000/tasks
+
+
+### 💬 Add a comment to the first task (id=1)
+POST http://127.0.0.1:5000/tasks/1/comments
+Content-Type: application/json
+
+{
+  "content": "This is my first comment!"
+}
+
+
+### 📋 Get all tasks again (check the comments)
+GET http://127.0.0.1:5000/tasks
+
+
+### ✏️ Update a comment (id=1)
+PUT http://127.0.0.1:5000/comments/1
+Content-Type: application/json
+
+{
+  "content": "Updated comment text!"
+}
+
+
+### 🗑️ Delete a comment (id=1)
+DELETE http://127.0.0.1:5000/comments/1
+
+
+### 🧾 Get all tasks again (confirm deletion)
+GET http://127.0.0.1:5000/tasks

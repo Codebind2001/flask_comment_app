@@ -1,20 +1,18 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS  # ✅ add this import
 
-# Initialize the database
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
 
-    # Configuration (using SQLite for simplicity)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Initialize the database with the app
     db.init_app(app)
+    CORS(app)  # ✅ enable CORS for frontend access
 
-    # Import routes here to register them
     from app import routes
     app.register_blueprint(routes.bp)
 

@@ -1,61 +1,24 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-const API_URL = "http://127.0.0.1:5000/tasks";
+// src/App.js
+import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [title, setTitle] = useState("");
-  const [editingTask, setEditingTask] = useState(null);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingTaskTitle, setEditingTaskTitle] = useState('');
 
-  // Fetch all tasks
+  const API_URL = 'http://127.0.0.1:5000/tasks';
+
+  // Fetch all tasks from backend
   const fetchTasks = async () => {
     try {
       const response = await axios.get(API_URL);
       setTasks(response.data);
     } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  // Add a new task
-  const addTask = async () => {
-    if (!title.trim()) return alert("Please enter a task title");
-
-    try {
-      await axios.post(API_URL, { title });
-      setTitle("");
-      fetchTasks();
-    } catch (error) {
-      console.error("Error adding task:", error);
-    }
-  };
-
-  // Delete a task
-  const deleteTask = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/${id}`);
-      fetchTasks();
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
-
-  // Start editing
-  const startEdit = (task) => {
-    setEditingTask(task);
-    setTitle(task.title);
-  };
-
-  // Save edited task
-  const saveEdit = async () => {
-    try {
-      await axios.put(`${API_URL}/${editingTask.id}`, { title });
-      setEditingTask(null);
-      setTitle("");
-      fetchTasks();
-    } catch (error) {
-      console.error("Error editing task:", error);
+      console.error('Error fetching tasks:', error);
+      alert('Cannot connect to backend!');
     }
   };
 
@@ -63,31 +26,86 @@ function App() {
     fetchTasks();
   }, []);
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>📝 Task Manager</h1>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter task title"
-      />
-      {editingTask ? (
-        <button onClick={saveEdit}>💾 Save</button>
-      ) : (
-        <button onClick={addTask}>➕ Add Task</button>
-      )}
+  // Add a new task
+  const addTask = async () => {
+    if (!newTaskTitle.trim()) return;
+    try {
+      const response = await axios.post(API_URL, { title: newTaskTitle });
+      setTasks([...tasks, response.data]);
+      setNewTaskTitle('');
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  };
 
-      <ul style={{ listStyle: "none", padding: 0, marginTop: "20px" }}>
+  // Delete a task
+  const deleteTask = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      setTasks(tasks.filter(task => task.id !== id));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  // Start editing a task
+  const startEditing = (task) => {
+    setEditingTaskId(task.id);
+    setEditingTaskTitle(task.title);
+  };
+
+  // Save edited task
+  const saveTask = async (id) => {
+    try {
+      const response = await axios.put(`${API_URL}/${id}`, { title: editingTaskTitle });
+      setTasks(tasks.map(task => (task.id === id ? response.data : task)));
+      setEditingTaskId(null);
+      setEditingTaskTitle('');
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingTaskId(null);
+    setEditingTaskTitle('');
+  };
+
+  return (
+    <div className="App">
+      <h1>📝 Task Manager</h1>
+
+      <div className="add-task">
+        <input
+          type="text"
+          placeholder="Enter task title"
+          value={newTaskTitle}
+          onChange={(e) => setNewTaskTitle(e.target.value)}
+        />
+        <button onClick={addTask}>Add Task</button>
+      </div>
+
+      <ul className="task-list">
         {tasks.map((task) => (
-          <li key={task.id} style={{ marginBottom: "10px" }}>
-            {task.title}
-            <button onClick={() => startEdit(task)} style={{ marginLeft: "10px" }}>
-              ✏️ Edit
-            </button>
-            <button onClick={() => deleteTask(task.id)} style={{ marginLeft: "10px" }}>
-              🗑️ Delete
-            </button>
+          <li key={task.id}>
+            {editingTaskId === task.id ? (
+              <>
+                <input
+                  type="text"
+                  value={editingTaskTitle}
+                  onChange={(e) => setEditingTaskTitle(e.target.value)}
+                />
+                <button onClick={() => saveTask(task.id)}>💾 Save</button>
+                <button onClick={cancelEditing}>❌ Cancel</button>
+              </>
+            ) : (
+              <>
+                <span>{task.title}</span>
+                <button onClick={() => startEditing(task)}>✏️ Edit</button>
+                <button onClick={() => deleteTask(task.id)}>🗑️ Delete</button>
+              </>
+            )}
           </li>
         ))}
       </ul>

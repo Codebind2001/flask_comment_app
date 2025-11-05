@@ -1,38 +1,35 @@
+/* src/App.css */
 .App {
+  max-width: 500px;
+  margin: 2rem auto;
+  font-family: Arial, sans-serif;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.add-task input {
+  padding: 0.5rem;
+  width: 70%;
+  margin-right: 0.5rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.add-task button {
+  padding: 0.5rem 1rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 2rem;
+}
+
+.task-list li {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.task-list li button {
+  margin-left: 0.5rem;
 }
